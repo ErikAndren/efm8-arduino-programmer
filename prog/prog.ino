@@ -8,13 +8,16 @@
 // Flashes EFM8 at about 10kB/s
 // Baud rate: 1000000
 
+#define DATA_DIR_REG DDRD
+#define INP_PIN_REG PIND
+
 // Digital pin 2 on Mega
-#define C2D_PORT  PORTE
-#define C2D_PIN   4
+#define C2D_PORT  PORTD
+#define C2D_PIN   0
 
 // Digital pin 3 on Mega
-#define C2CK_PORT   PORTE
-#define C2CK_PIN    5
+#define C2CK_PORT   PORTD
+#define C2CK_PIN    1
 
 #define LED LED_BUILTIN 
 
@@ -37,7 +40,6 @@ static unsigned char c2_poll_bit_high (unsigned char mask);
 unsigned char c2_write_flash_block (unsigned int addr, unsigned char * data, unsigned char len);
 unsigned char c2_erase_device (void);
 
-
 void c2_rst() {
   C2CK_PORT &= ~(1<<C2CK_PIN);
   delayMicroseconds(50);
@@ -49,22 +51,21 @@ void c2_rst() {
   C2CK_PORT &= ~(1<<C2CK_PIN); \
   C2CK_PORT |= (1<<C2CK_PIN);
 
-
 static unsigned char c2_read_bits (unsigned char len) {
   unsigned char i, data, mask;
   mask = 0x01 << (len-1);
   data = 0;
   //pinMode(C2D, INPUT);
-  DDRE &= ~(1<<C2D_PIN);
-  PINE &= (1<<C2D_PIN);
+  DATA_DIR_REG &= ~(1<<C2D_PIN);
+  INP_PIN_REG &= (1<<C2D_PIN);
   for (i=0;i<len;i++) {
     c2_pulse_clk();
     data = data >> 1;
-    if (PINE & (1<<C2D_PIN)) {
+    if (INP_PIN_REG & (1<<C2D_PIN)) {
       data = data | mask;
     }
   }
-  DDRE |= (1<<C2D_PIN);
+  DATA_DIR_REG |= (1<<C2D_PIN);
   //pinMode(C2D, OUTPUT);
 
   return data;
@@ -73,7 +74,7 @@ static unsigned char c2_read_bits (unsigned char len) {
 static void c2_send_bits (unsigned char data, unsigned char len) {
   unsigned char i;
   //pinMode(C2D, OUTPUT);
-  DDRE |= (1<<C2D_PIN);
+  DATA_DIR_REG |= (1<<C2D_PIN);
   for (i=0;i<len;i++) {
     if (data&0x01) {
       C2D_PORT |= (1<<C2D_PIN);
@@ -246,8 +247,8 @@ void c2_write_addr(unsigned char addr) {
 void setup() {
   Serial.begin(1000000);
   
-  DDRE |= (1<<C2D_PIN);
-  DDRE |= (1<<C2CK_PIN);
+  DATA_DIR_REG |= (1<<C2D_PIN);
+  DATA_DIR_REG |= (1<<C2CK_PIN);
   C2CK_PORT |= (1<<C2CK_PIN);
   
   digitalWrite(LED, LOW);
