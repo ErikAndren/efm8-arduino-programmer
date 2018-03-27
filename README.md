@@ -1,10 +1,10 @@
 # efm8-arduino-programmer
-Program EFM8 devices using an Arduino Mega.
+Program EFM8 devices using an Arduino Nano.
 
 Thanks to jaromir-sukuba and racerxdl for working on firmware to implement C2 protocol via arduino GPIO.  This work largely pulls from them.
 
 ## Pre-Steps
-Currently, it is for Arduino Mega and maps C2D and C2CK to digital pins 2 and 3, respectively. 
+Currently, it is for Arduino Nano and maps C2D and C2CK to digital pins 2 and 3, respectively. 
 
 C2 is a 2-pin protocol.  Any arduino should work to implement the protocol via GPIO.  Just need to make sure that the correct pins are mapped for your Arduino.
 
